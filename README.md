@@ -101,7 +101,7 @@ draft: false
 
 Markdown 优先读取 Front Matter；无 Front Matter 时，使用一级标题或文件名作为标题，日期默认为导入当天。CSDN 来源 ID 相同的文章不会覆盖已编辑的本地草稿。若确实需要重新导入，可先导出备份，再删除旧草稿。
 
-本人 CSDN 主页为 https://blog.csdn.net/Hismybestlove 。2026-11-15 已核对 78 个文章链接，成功迁移当前可读的 5 篇与 55 张图片；后续读取遇到 HTTP 521 安全验证，73 篇待验证或导入导出文件后继续。公式图片已转为本地 KaTeX，不再依赖 CSDN 公式服务。
+本人 CSDN 主页为 https://blog.csdn.net/Hismybestlove 。2026-11-15 已核对 78 个文章链接，成功迁移 10 篇与 146 张本地图片；后续读取再次遇到 HTTP 521 安全验证，68 篇待验证或导入导出文件后继续。公式图片已转为本地 KaTeX，不再依赖 CSDN 公式服务。
 
 ## 多平台与多账号
 
