@@ -9,6 +9,8 @@ import {
   Trash2,
   Paperclip,
   BookOpen,
+  PanelsTopLeft,
+  FileCode2,
 } from "lucide-react";
 import type { ContentDocument, ViewProps, Asset } from "../types";
 import { kindLabels } from "../types";
@@ -23,6 +25,7 @@ import {
   download,
 } from "../api";
 const MermaidPreview = lazy(() => import("../components/MermaidPreview"));
+const BlockCanvas = lazy(() => import("../components/BlockCanvas"));
 type Draft = Omit<
   ContentDocument,
   "id" | "createdAt" | "updatedAt" | "version" | "schemaVersion"
@@ -77,6 +80,7 @@ export default function Editor({
   const [dirty, setLocalDirty] = useState(!initial?.id);
   const [tab, setTab] = useState("overview");
   const [preview, setPreview] = useState(true);
+  const [canvasMode, setCanvasMode] = useState(false);
   const [revisions, setRevisions] = useState<ContentDocument[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [properties, setProperties] = useState(false);
@@ -118,6 +122,7 @@ export default function Editor({
   }
   const attached = state.assets.filter((a) => doc.assetIds.includes(a.id));
   const pdf = attached.find((a) => a.mime === "application/pdf");
+  const hasCanvas = doc.kind === "article" || doc.kind === "note";
   const attach = async (file: File) => {
     try {
       const asset = await upload(file);
@@ -427,49 +432,75 @@ export default function Editor({
           </div>
         </div>
       )}
+      {hasCanvas && (
+        <div className="editor-mode-switch" aria-label="写作方式">
+          <button
+            aria-pressed={!canvasMode}
+            onClick={() => setCanvasMode(false)}
+          >
+            <FileCode2 size={14} />
+            Markdown 源码
+          </button>
+          <button aria-pressed={canvasMode} onClick={() => setCanvasMode(true)}>
+            <PanelsTopLeft size={14} />
+            组件画布
+          </button>
+        </div>
+      )}
       <div className={`editor-canvas ${preview ? "split" : ""}`}>
-        <section className="source-pane">
-          <div className="pane-label">
-            <span>
-              {doc.kind === "diagram"
-                ? "MERMAID SOURCE"
-                : doc.kind === "paper" && tab !== "body"
-                  ? "READING NOTES · " + tab.toUpperCase()
-                  : "MARKDOWN"}
-            </span>
-            <span>
-              {
-                (doc.kind === "paper" && tab !== "body"
+        {hasCanvas && canvasMode ? (
+          <Suspense fallback={<p className="muted">正在铺开写作画布…</p>}>
+            <BlockCanvas
+              body={doc.body}
+              onChange={(body) => update({ body })}
+            />
+          </Suspense>
+        ) : (
+          <section className="source-pane">
+            <div className="pane-label">
+              <span>
+                {doc.kind === "diagram"
+                  ? "MERMAID SOURCE"
+                  : doc.kind === "paper" && tab !== "body"
+                    ? "READING NOTES · " + tab.toUpperCase()
+                    : "MARKDOWN"}
+              </span>
+              <span>
+                {
+                  (doc.kind === "paper" && tab !== "body"
+                    ? String(
+                        doc.metadata[tab as keyof typeof doc.metadata] || "",
+                      )
+                    : doc.body
+                  ).length
+                }{" "}
+                字符
+              </span>
+            </div>
+            <label className="sr-only" htmlFor="body-editor">
+              {doc.kind === "paper" ? "论文分层笔记" : "正文源码"}
+            </label>
+            <textarea
+              id="body-editor"
+              spellCheck={false}
+              value={
+                doc.kind === "paper" && tab !== "body"
                   ? String(doc.metadata[tab as keyof typeof doc.metadata] || "")
                   : doc.body
-                ).length
-              }{" "}
-              字符
-            </span>
-          </div>
-          <label className="sr-only" htmlFor="body-editor">
-            {doc.kind === "paper" ? "论文分层笔记" : "正文源码"}
-          </label>
-          <textarea
-            id="body-editor"
-            spellCheck={false}
-            value={
-              doc.kind === "paper" && tab !== "body"
-                ? String(doc.metadata[tab as keyof typeof doc.metadata] || "")
-                : doc.body
-            }
-            onChange={(e) =>
-              doc.kind === "paper" && tab !== "body"
-                ? meta(tab, e.target.value)
-                : update({ body: e.target.value })
-            }
-            placeholder={
-              doc.kind === "paper"
-                ? "研究问题是什么？方法如何组织？证据与局限在哪里？\n\n在这一层记录你的理解。"
-                : "## 从这里开始\n\n写下你的第一句话。\n\n支持代码、表格和 $LaTeX$ 公式。"
-            }
-          />
-        </section>
+              }
+              onChange={(e) =>
+                doc.kind === "paper" && tab !== "body"
+                  ? meta(tab, e.target.value)
+                  : update({ body: e.target.value })
+              }
+              placeholder={
+                doc.kind === "paper"
+                  ? "研究问题是什么？方法如何组织？证据与局限在哪里？\n\n在这一层记录你的理解。"
+                  : "## 从这里开始\n\n写下你的第一句话。\n\n支持代码、表格和 $LaTeX$ 公式。"
+              }
+            />
+          </section>
+        )}
         {preview && (
           <section className="preview-pane">
             <div className="pane-label">

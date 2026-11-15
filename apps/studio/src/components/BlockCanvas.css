@@ -1,0 +1,332 @@
+.editor-mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 16px 0 0;
+  padding: 4px;
+  width: fit-content;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.editor-mode-switch button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  font-size: 11px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--muted);
+}
+.editor-mode-switch button[aria-pressed="true"] {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border-color: var(--line);
+  box-shadow: 0 2px 4px #25312b08;
+}
+.writing-canvas {
+  min-width: 0;
+  padding: 23px;
+  background: var(--surface);
+}
+.canvas-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.canvas-toolbar .eyebrow {
+  font-size: 7px;
+  letter-spacing: 1.1px;
+}
+.canvas-toolbar h2 {
+  font-size: 21px;
+  letter-spacing: 1px;
+  margin-top: 6px;
+}
+.canvas-history {
+  display: flex;
+  gap: 3px;
+}
+.canvas-history button,
+.canvas-block-actions button,
+.canvas-drag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0;
+  color: var(--muted);
+}
+.canvas-history button:hover,
+.canvas-block-actions button:hover,
+.canvas-drag:hover {
+  background: var(--green-soft);
+  color: var(--ink);
+}
+.canvas-palette {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--paper);
+  gap: 1px;
+}
+.canvas-palette button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 6px 4px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.canvas-palette button:hover {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.canvas-help {
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin: 12px 0 21px;
+}
+.canvas-block-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.canvas-block {
+  min-width: 0;
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface-raised);
+  box-shadow: 0 3px 10px -8px #25312b29;
+  scroll-margin-top: 80px;
+}
+.canvas-block:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--green) 10%, transparent);
+}
+.canvas-block.is-dragging {
+  z-index: 5;
+  box-shadow: 0 12px 25px #25312b26;
+  opacity: 0.88;
+}
+.canvas-block-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  background: color-mix(in srgb, var(--paper) 65%, var(--surface));
+  border-radius: 5px 5px 0 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.canvas-drag {
+  cursor: grab;
+  touch-action: none;
+}
+.canvas-drag:active {
+  cursor: grabbing;
+}
+.canvas-block-number {
+  font: 9px var(--mono);
+  color: var(--muted);
+}
+.canvas-block-label {
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 1px;
+}
+.canvas-block-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+.canvas-block-content {
+  padding: 15px 17px;
+}
+.canvas-block-content textarea {
+  display: block;
+  width: 100%;
+  min-height: 78px;
+  height: auto;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 9px 10px;
+  background: transparent;
+  font: 13px/1.95 var(--sans);
+  box-shadow: none;
+  resize: vertical;
+}
+.canvas-block-content textarea:hover {
+  border-color: var(--line-soft);
+}
+.canvas-block-content textarea:focus {
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: none;
+}
+.canvas-block-content .canvas-monospace {
+  font: 11px/1.9 var(--mono);
+  background: color-mix(in srgb, var(--paper) 58%, transparent);
+}
+.canvas-block-content .canvas-heading-input {
+  font: 500 23px/1.7 var(--serif);
+  min-height: 54px;
+}
+.canvas-inline-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.canvas-inline-field select,
+.canvas-inline-field input {
+  width: auto;
+  max-width: 180px;
+  font-size: 11px;
+  padding: 4px 8px;
+  background: var(--surface);
+}
+.canvas-formula {
+  padding: 18px 6px;
+  overflow-x: auto;
+  color: var(--ink);
+  max-width: 100%;
+}
+.canvas-formula .katex-display {
+  margin: 0;
+  font-size: 1.05em;
+}
+.canvas-field-hint,
+.canvas-warning {
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin: 9px 3px 2px;
+  overflow-wrap: anywhere;
+}
+.canvas-warning {
+  color: var(--accent);
+}
+.canvas-block[data-kind="callout"] {
+  border-left: 3px solid var(--green);
+}
+.canvas-block[data-kind="callout"] .canvas-block-content {
+  background: color-mix(in srgb, var(--green-soft) 40%, var(--surface));
+}
+.canvas-block[data-kind="raw"] {
+  border-style: dashed;
+}
+.canvas-block .diagram-preview {
+  min-height: 130px;
+  padding: 17px 8px 6px;
+  margin-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  background: var(--surface);
+}
+.canvas-block .preview {
+  min-height: 0;
+  padding: 8px;
+  font-size: 12px;
+}
+.canvas-block .preview img {
+  max-height: 260px;
+  object-fit: contain;
+  margin: auto;
+}
+.canvas-footnote {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin-top: 25px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line-soft);
+}
+.canvas-empty {
+  text-align: center;
+  padding: 50px 15px;
+  color: var(--muted);
+}
+.canvas-empty svg {
+  margin: 0 auto 14px;
+}
+.canvas-empty h3 {
+  font-size: 21px;
+  color: var(--ink);
+}
+.canvas-empty p {
+  font-size: 11px;
+  line-height: 2;
+  margin-top: 10px;
+}
+@media (max-width: 760px) {
+  .writing-canvas {
+    padding: 19px 13px;
+  }
+  .canvas-toolbar h2 {
+    font-size: 21px;
+  }
+  .canvas-palette button {
+    min-height: 44px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  .canvas-palette button:last-child {
+    font-size: 8px;
+  }
+  .canvas-palette button svg {
+    width: 13px;
+  }
+  .canvas-block-content {
+    padding: 12px;
+  }
+  .canvas-block-content textarea {
+    font-size: 13px;
+    min-height: 85px;
+    padding: 8px;
+  }
+  .canvas-block-content .canvas-monospace {
+    font-size: 11px;
+  }
+  .canvas-block-content .canvas-heading-input {
+    font-size: 22px;
+    min-height: 52px;
+  }
+  .canvas-block-actions button,
+  .canvas-drag {
+    min-width: 32px;
+    height: 36px;
+  }
+  .canvas-block-bar {
+    gap: 5px;
+    padding: 4px 5px;
+  }
+  .canvas-block-number {
+    font-size: 8px;
+  }
+  .canvas-block-label {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .editor-mode-switch button {
+    min-height: 38px;
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}

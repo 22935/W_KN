@@ -67,7 +67,7 @@ Files: `tests/platform.e2e.mjs`, existing `tests/browser.e2e.mjs`, plan progress
 - [x] Verify new article save/reload/version/snapshot, paper layered notes/PDF, Mermaid persistence, template/manual result workflow, uploads, module navigation, theme, 375px layout and missing-session screen.
 - [x] Keep legacy browser coverage for import, accounts, delivery isolation; update only brand/entry selectors affected by the new shell.
 - [x] Inspect desktop/mobile screenshots and resolve usability defects. Run `npm test`, both browser suites and deployment checks; record exact limitations.
-- [ ] Commit tested changes and sync approved GitHub/Gitee remotes without force. Verify remote commits and Pages status where available; report deployment separately from push.
+- [x] Commit tested changes and sync approved GitHub/Gitee remotes without force. Verify remote commits and Pages status where available; report deployment separately from push.
 
 ## Progress and implementation decisions
 
@@ -80,3 +80,5 @@ Files: `tests/platform.e2e.mjs`, existing `tests/browser.e2e.mjs`, plan progress
 - Fresh verification: 27 unit/API tests; Astro diagnostics 0 errors / 0 warnings; React TypeScript passed; complete production build passed (37 pages / 28 article search entries); 6 new-workbench browser scenarios and 8 legacy/blog browser scenarios passed. Desktop, editor, diagram and 375px screenshots inspected.
 - Deployment acceptance passed with alternate repository subpath and default configuration: actual images, formulas, sanitized article scripts, search links and draft isolation checked. Temporary test articles were removed and the default 28-article build restored.
 - CSDN normal migration added 5 real articles (28/78 total) and 9 distinct images (254 total); remaining 50 stopped at HTTP 521. Advanced editor dragging, embedded draw.io, scientific plotting, actual AI calls, PDF annotations/translation, LaTeX compilation and public server hosting remain outside this release.
+
+- Delivery verified: implementation `5f45977` fast-forwarded to main and synchronized to GitHub/Gitee; the public Pages homepage returned the Yanshan brand.

@@ -160,6 +160,148 @@ test(
         "另一个窗口保存的新稿",
       );
     });
+    await t.test("组件画布保留源码、公式图解、排序撤销与保存重开", async () => {
+      await nav("落笔写作");
+      await page.getByLabel("文档标题", { exact: true }).fill("组件画布验收");
+      const source =
+        "## 研究问题\n\n保留 **强调** 与 $x$ 的段落。\n\n$$\nx^2\n$$\n\n```mermaid\nflowchart LR\n A-->B\n```\n\n| 指标 | 值 |\n| --- | --- |\n| loss | 0.1 |\n";
+      await page.getByLabel("正文源码", { exact: true }).fill(source);
+      await page.getByRole("button", { name: "组件画布", exact: true }).click();
+      await page.locator(".canvas-block").first().waitFor();
+      assert.equal(await page.locator(".canvas-block").count(), 5);
+      await page
+        .getByRole("button", { name: "Markdown 源码", exact: true })
+        .click();
+      assert.equal(
+        await page.getByLabel("正文源码", { exact: true }).inputValue(),
+        source,
+      );
+      await page.getByRole("button", { name: "组件画布", exact: true }).click();
+      await page
+        .getByLabel("段落内容", { exact: true })
+        .fill("修订 **强调** 与 $x$ 的段落。");
+      await page.getByLabel("公式 LaTeX", { exact: true }).fill("E = mc^2");
+      await page.locator('.canvas-block[data-kind="formula"] .katex').waitFor();
+      await page
+        .locator('.canvas-block[data-kind="mermaid"] .diagram-preview svg')
+        .waitFor();
+      const handles = page.getByRole("button", { name: /拖动第\d+块/ });
+      await handles.first().scrollIntoViewIfNeeded();
+      const a = await handles.nth(0).boundingBox();
+      const b = await handles.nth(1).boundingBox();
+      await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, {
+        steps: 20,
+      });
+      await page.mouse.up();
+      await page.waitForTimeout(250);
+      assert.equal(
+        await page.locator(".canvas-block").first().getAttribute("data-kind"),
+        "paragraph",
+      );
+      await handles.nth(1).focus();
+      await page.keyboard.press("Space");
+      await page.locator(".canvas-block.is-dragging").waitFor();
+      await page.keyboard.press("ArrowUp");
+      await page.waitForTimeout(150);
+      await page.keyboard.press("Space");
+      await page.waitForTimeout(250);
+      assert.equal(
+        await page.locator(".canvas-block").first().getAttribute("data-kind"),
+        "heading",
+      );
+      await page
+        .getByRole("button", { name: "撤销画布操作", exact: true })
+        .click();
+      assert.equal(
+        await page.locator(".canvas-block").first().getAttribute("data-kind"),
+        "paragraph",
+      );
+      await page
+        .getByRole("button", { name: "重做画布操作", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "复制第2块", exact: true })
+        .click();
+      assert.equal(await page.locator(".canvas-block").count(), 6);
+      await page
+        .getByRole("button", { name: "删除第3块", exact: true })
+        .click();
+      assert.equal(await page.locator(".canvas-block").count(), 5);
+      await page
+        .getByRole("button", { name: "撤销画布操作", exact: true })
+        .click();
+      assert.equal(await page.locator(".canvas-block").count(), 6);
+      await page
+        .getByRole("button", { name: "撤销画布操作", exact: true })
+        .click();
+      assert.equal(await page.locator(".canvas-block").count(), 5);
+      await page
+        .getByRole("button", { name: "添加提示卡", exact: true })
+        .click();
+      await page
+        .getByLabel("提示卡内容", { exact: true })
+        .fill("变量说明：m 表示质量，c 表示光速。");
+      await page.getByRole("button", { name: "保存", exact: true }).click();
+      await page.getByText("已保存 · v1", { exact: true }).waitFor();
+      await page.waitForFunction(
+        () =>
+          !Array.from(document.querySelectorAll("button")).find(
+            (b) => b.textContent.trim() === "保存",
+          )?.disabled,
+      );
+      await page
+        .locator(".preview")
+        .getByText(/变量说明/)
+        .waitFor();
+      await page.locator(".notice button").click();
+      await page.evaluate(() => scrollTo(0, 0));
+      await page.screenshot({
+        path: join(project, "test-results/yanshan-canvas-desktop.png"),
+        fullPage: true,
+      });
+      await nav("内容库");
+      await page.getByRole("button", { name: /组件画布验收/ }).click();
+      const saved = await page
+        .getByLabel("正文源码", { exact: true })
+        .inputValue();
+      assert.match(saved, /修订 \*\*强调\*\*/);
+      assert.match(saved, /E = mc\^2/);
+      assert.match(saved, /变量说明/);
+      assert.ok(saved.includes("| 指标 | 值 |\n| --- | --- |\n| loss | 0.1 |"));
+      await page.getByRole("button", { name: "组件画布", exact: true }).click();
+      await page
+        .locator('.canvas-block[data-kind="mermaid"] .diagram-preview svg')
+        .waitFor();
+      await page.getByText("已保存 · v1", { exact: true }).waitFor();
+      await page.setViewportSize({ width: 375, height: 812 });
+      await page.waitForFunction(
+        () =>
+          document.querySelector(".sidebar").getBoundingClientRect().right <= 1,
+      );
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        ),
+        false,
+      );
+      await page
+        .getByRole("button", { name: "下移第1块", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "撤销画布操作", exact: true })
+        .click();
+      await page
+        .locator(".preview")
+        .getByText(/变量说明/)
+        .waitFor();
+      await page.screenshot({
+        path: join(project, "test-results/yanshan-canvas-mobile.png"),
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 1440, height: 1000 });
+    });
     await t.test("论文三层笔记与 PDF 资源", async () => {
       await nav("论文书架");
       await page.getByRole("button", { name: "记录论文" }).click();

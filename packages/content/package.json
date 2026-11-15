@@ -7,6 +7,13 @@
     ".": {
       "types": "./index.d.ts",
       "default": "./index.mjs"
+    },
+    "./canvas": {
+      "types": "./canvas.d.ts",
+      "default": "./canvas.mjs"
     }
+  },
+  "dependencies": {
+    "marked": "^16.4.0"
   }
 }

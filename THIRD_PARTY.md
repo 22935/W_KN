@@ -3,8 +3,9 @@
 本项目公开博客和本地工作台采用独立实现。没有将完整第三方博客主题或多平台分发项目复制进源代码。
 
 - 砚山统一工作台使用 React（MIT）、Vite（MIT）、Lucide React（ISC）、Zod（MIT）、Mermaid（MIT）及 KaTeX（MIT）；实际版本以 `package-lock.json` 为准。Mermaid 通过严格模式渲染本地源码，并在进入图解模块时按需加载。
+- 组件画布使用 dnd-kit（MIT，@dnd-kit/core 6.3.1、sortable 10.0.0、utilities 3.2.2）提供鼠标、触控与键盘排序，源代码：https://github.com/clauderic/dnd-kit 。Markdown 分块与画布界面为本项目实现，未接入 Tiptap。
 - SQLite 由 Node.js 的 `node:sqlite` 提供，数据库文件仅在本机数据目录中生成。
-- draw.io 当前仅支持用户自己的源文件上传与下载，尚未嵌入上游编辑器或复制其代码。Tiptap 为后续块编辑器候选，当前没有接入或宣称其拖拽功能已实现。
+- draw.io 当前仅支持用户自己的源文件上传与下载，尚未嵌入上游编辑器或复制其代码。Tiptap 为后续块编辑器候选，当前没有接入；本版本拖拽使用 dnd-kit 实现。
 
 - Astro、Pagefind、KaTeX、Express、Cheerio、Turndown、marked、sanitize-html、Playwright 等依赖的许可详见各 npm 包及安装后的 LICENSE 文件。
 - Fuwari：博客功能参考（Astro、文章目录、主题、静态搜索），未复制其界面代码。仓库：https://github.com/saicaca/fuwari

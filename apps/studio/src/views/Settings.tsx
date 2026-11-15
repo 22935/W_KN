@@ -136,7 +136,7 @@ export default function Settings({
           <dl className="capability-list">
             {[
               ["数据存储", "SQLite · 本地持久化"],
-              ["文章写作", "Markdown、公式、版本快照"],
+              ["文章写作", "组件画布、拖拽、Markdown、公式与快照"],
               ["论文阅读", "PDF 原文与三层阅读笔记"],
               ["图解", "Mermaid 编辑 · draw.io 源文件管理"],
               ["AI", "提示模板与手动结果归档"],
