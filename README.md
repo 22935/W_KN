@@ -2,6 +2,10 @@
 
 W.KN 的个人博客，以及配套的本地创作工作台。GitHub 仓库：https://github.com/22935/W_KN 。公开地址：https://22935.github.io/W_KN/ 。米白纸感、墨绿山水、朱砂点缀；文章使用 Markdown 保存，博客可免费部署到 GitHub Pages。
 
+## 砚山平台升级设计
+
+新平台暂用“砚山 Yanshan”作为工作名，方向为本地优先、服务器可选的写作与科研工作台。第一阶段先建立博客、写作、论文、绘图、AI 与资源库的统一骨架。完整方案见 [砚山平台设计（待评审）](docs/superpowers/specs/2026-11-15-yanshan-platform-design.md)。本文其余部分仍说明当前可运行版本；新架构与高级能力尚未实现。
+
 ## 启动
 
 建议使用 **Node.js 24 LTS**。依赖已锁定在 `package-lock.json`。
