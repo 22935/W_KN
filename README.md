@@ -198,6 +198,8 @@ git remote add gitee https://gitee.com/你的用户名/你的仓库.git
 npm run sync
 ```
 
+当前已配置并验证的 Gitee 远端为 `https://gitee.com/mythksw/W_KN.git`，`main` 与 GitHub 同步到提交 `94a10fc`。
+
 `npm run sync` 不自动提交，只将当前分支同一提交依次推送到 GitHub 与 Gitee；不强制推送。工作台“提交内容并推送”同样使用两个远端，分别显示结果。Gitee 失败时会报告“部分推送完成”，不会隐藏 GitHub 已成功的结果。重试 `npm run sync` 无须重复提交。
 
 Gitee 仓库若有不同历史，需要先正常合并，再同步。Gitee 镜像不等于已配置 Gitee Pages，本项目公开站点由 GitHub Pages 承载。GitHub 网页上直接产生的提交也需要本机拉取后再运行同步；当前未配置在 GitHub 保存 Gitee 私钥的云端镜像流程。
