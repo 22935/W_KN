@@ -26,7 +26,7 @@
 - [x] Browser checks cover no-edit switching, component editing, formulas, Mermaid, drag and keyboard order, undo, saving/reopening and mobile overflow. Inspect desktop and mobile screenshots.
 - [x] Update README, settings capability labels and third-party sources to distinguish this component canvas from Tiptap and from future scientific plotting.
 - [x] Run `npm test`, `npm run check`, production build and the new/legacy browser suites; inspect generated site article counts and `git diff --check` outside preserved imported Markdown.
-- [ ] Commit, integrate with main without force, sync GitHub/Gitee and verify remote SHAs and the public Pages result separately.
+- [x] Commit, integrate with main without force, sync GitHub/Gitee and verify remote SHAs and the public Pages result separately.
 
 ## Verification checkpoint
 
@@ -34,3 +34,5 @@
 - `npm test`: 32 passed; `npm run check`: Astro 0 errors / 0 warnings and React TypeScript passed. Production build: 37 pages, all 28 public articles and search entries present.
 - Workbench browser suite: 8 passed including the parent suite; legacy/blog suite: 9 passed including its parent. Canvas scenario verifies no-edit source switching, mouse dragging, keyboard sorting, duplicate/delete restoration, undo/redo, formula/Mermaid rendering, persisted reopening and mobile movement without horizontal overflow.
 - Desktop and 375px canvas screenshots inspected. Canvas history is transient and limited to 60 snapshots; source mode changes reset that temporary history. Full rich text, automatic graphical formula models and public Mermaid image export remain separate work.
+
+- Delivery verified: implementation `a584a8b` integrated into main and both origin/main and gitee/main resolved to `a584a8b71191040a3158c16d3dd5a66e52bfd7e6`. GitHub Actions run [43720632265](https://github.com/22935/W_KN/actions/runs/43720632265) completed successfully. The live `/W_KN/studio/` page returned HTTP 200 and included the new canvas instructions.
