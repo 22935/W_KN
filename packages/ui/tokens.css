@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  --paper: #f4f1ea;
+  --surface: #fbf9f4;
+  --surface-raised: #fffdf9;
+  --ink: #25312b;
+  --muted: #6d746a;
+  --line: #dbded2;
+  --line-soft: #e7e7dc;
+  --accent: #a54837;
+  --green: #566d60;
+  --green-soft: #e7ece4;
+  --soft: #edece3;
+  --serif:
+    "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", SimSun, serif;
+  --sans: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --shadow: 0 6px 25px -18px #25312b3b;
+  --radius: 5px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #17221e;
+  --surface: #1d2a24;
+  --surface-raised: #24332c;
+  --ink: #e9e4d9;
+  --muted: #a8b0a3;
+  --line: #3c4c40;
+  --line-soft: #2f4035;
+  --accent: #e19b7f;
+  --green: #a3b69d;
+  --green-soft: #2c4032;
+  --soft: #233229;
+  --shadow: 0 6px 25px -18px #0009;
+}

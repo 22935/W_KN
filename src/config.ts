@@ -1,9 +1,10 @@
+import brand from './site.json';
 export const site = {
-  name: '山外山',
-  englishName: 'WKN JOURNAL',
+  name: brand.name,
+  englishName: brand.englishName,
   author: 'W.KN',
-  description: '在技术与生活之间，寻找自己的山海。记录创造，分享思考，留住日常。',
-  intro: '一个关于技术、设计与生活的个人博客。',
+  description: brand.description,
+  intro: '一间关于写作、人工智能与研究的数字书斋。',
   email: '',
   github: 'https://github.com/22935/W_KN',
   csdn: 'https://blog.csdn.net/Hismybestlove',

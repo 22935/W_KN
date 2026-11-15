@@ -34,7 +34,7 @@ export function extractCsdnHtml(html,source){
   if(!article.length||article.text().trim().length<10)throw new Error('没有识别到 CSDN 正文，可能需要登录或人工验证；可导入自己保存的完整 HTML');
   const title=$('#articleContentId').text().trim()||$('h1.title-article').text().trim()||$('meta[property="og:title"]').attr('content')||$('title').text().replace(/[-_]CSDN博客.*$/,'').trim();
   if(!title)throw new Error('没有识别到文章标题');
-  article.find('script,style,iframe,form,button,.hljs-button,.hide-article-box,.blog-extension-box').remove();
+  article.find('script,style,iframe,form,button,.hljs-button,.hide-article-box,.blog-extension-box,img[src*="CsdnLink/icons/"]').remove();
   article.find('pre').each((_,pre)=>{$(pre).find('.hljs-ln-numbers,.line-numbers-rows').remove();const lines=$(pre).find('td.hljs-ln-code');if(lines.length){const text=lines.map((_,el)=>$(el).text()).get().join('\n');$(pre).empty().append($('<code>').text(text));}});
   article.find('img').each((_,img)=>{const el=$(img);const src=el.attr('data-src')||el.attr('src');if(src)try{el.attr('src',new URL(src,source).href);}catch{};});
   const headingDepths=article.find('h1,h2,h3,h4,h5,h6').map((_,el)=>Number(el.tagName.slice(1))).get();

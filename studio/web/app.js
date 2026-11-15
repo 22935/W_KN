@@ -112,5 +112,7 @@ $('#jobs-list').addEventListener('click',async e=>{
 });
 $('#link-form').addEventListener('submit',e=>{e.preventDefault();busy(e.target.querySelector('[type=submit]'),async()=>{const r=await post(`/jobs/${confirmJob}/confirm`,{url:new FormData(e.target).get('url')});$('#link-dialog').close();await refresh(true);notify(r.message);});});
 setInterval(async()=>{if(state.jobs.some(j=>['queued','running'].includes(j.status))){try{const fresh=await api('/state');state.jobs=fresh.jobs;renderJobs();$('#job-count').textContent=state.jobs.length;}catch{}}},2500);
-if(!token)$('#session-dialog').showModal();else refresh(true).catch(error=>notify(error.message,true));
+if(!token)$('#session-dialog').showModal();else post('/v1/session',{}).then(()=>refresh(true)).catch(error=>notify(error.message,true));
 await newPost();await showView('overview');
+
+const requestedView=new URLSearchParams(location.search).get('view');if(requestedView)document.querySelector(`[data-view="${['imports','accounts','deliveries'].includes(requestedView)?requestedView:'overview'}"]`)?.click();

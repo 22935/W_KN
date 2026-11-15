@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from './PostCard.astro';
+import {getPosts} from '../lib/posts';
+import {url} from '../config';
+interface Props{kind:'papers'|'diagrams'|'resources';}
+const{kind}=Astro.props;
+const config={papers:{title:'论文与阅读',eyebrow:'READ, QUESTION, UNDERSTAND',heading:'读有所获，思有所归。',description:'从研究问题到方法与证据，留下每一次阅读的理解。',empty:'新的论文阅读笔记，正在书斋中慢慢积累。'},diagrams:{title:'图解工坊',eyebrow:'MAKE IDEAS VISIBLE',heading:'让抽象，变得可见。',description:'以图为桥，连接公式、模型与直觉。',empty:'这里将展示公开的模型图解、公式讲解与科研图形。'},resources:{title:'资源与工具',eyebrow:'TOOLS FOR A CURIOUS MIND',heading:'工欲善其事，先蓄一池墨。',description:'记录亲自使用的工具、学习资源与实践方法。',empty:'整理过的资源与工具笔记将在这里出现。'}}[kind];
+const posts=(await getPosts()).filter(p=>kind==='papers'?/论文|文献|科研/.test(p.data.title)||p.data.tags.includes('论文笔记'):kind==='diagrams'?p.data.tags.includes('图解')||p.data.category==='图解':/工具|资源|Matplotlib/.test(p.data.title)||p.data.category==='资源');
+---
+<Base title={config.title}><div class="container"><section class="page-intro"><span class="eyebrow">{config.eyebrow}</span><h1>{config.heading}</h1><p>{config.description}</p></section>{posts.length>0?<section class="catalog-posts"><div class="section-heading"><span class="eyebrow">已公开的内容 / {posts.length.toString().padStart(2,'0')}</span></div><div class="post-grid">{posts.map((post,index)=><PostCard post={post} index={index}/>)}</div></section>:<div class="catalog-empty"><span>一</span><h2>留白，是下一次探索的开始。</h2><p>{config.empty}</p><a class="outline-button" href={url('journal/')}>先读一篇文章 ↗</a></div>}<section class="catalog-note"><p>写作、私人论文、图解源文件与阅读笔记，在作者工作台中整理；这里只展示选择公开的内容。</p><a href={url('studio/')} class="text-link">前往砚山工作台 ↗</a></section></div></Base>

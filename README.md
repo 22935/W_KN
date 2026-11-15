@@ -1,210 +1,151 @@
-# 山外山 · WKN Journal
+# 砚山 Yanshan
 
-W.KN 的个人博客，以及配套的本地创作工作台。GitHub 仓库：https://github.com/22935/W_KN 。公开地址：https://22935.github.io/W_KN/ 。米白纸感、墨绿山水、朱砂点缀；文章使用 Markdown 保存，博客可免费部署到 GitHub Pages。
+一间把写作、论文阅读、图解与资源整理放在一起的数字书斋。宣纸、墨色、青绿与朱砂组成简约古风界面；公开博客部署在 GitHub Pages，私人工作台在自己的电脑上运行。
 
-## 砚山平台升级设计
+- 公开博客：https://22935.github.io/W_KN/
+- GitHub：https://github.com/22935/W_KN
+- Gitee：https://gitee.com/mythksw/W_KN
+- CSDN 来源：https://blog.csdn.net/Hismybestlove
 
-新平台暂用“砚山 Yanshan”作为工作名，方向为本地优先、服务器可选的写作与科研工作台。第一阶段先建立博客、写作、论文、绘图、AI 与资源库的统一骨架。完整方案见 [砚山平台设计（待评审）](docs/superpowers/specs/2026-11-15-yanshan-platform-design.md)。本文其余部分仍说明当前可运行版本；新架构与高级能力尚未实现。
+## 立即使用
 
-## 启动
-
-建议使用 **Node.js 24 LTS**。依赖已锁定在 `package-lock.json`。
+建议 Node.js 24 LTS，SQLite 运行层要求 Node.js 22.16 或更新版本。
 
 ```powershell
 npm ci
-npm run dev
-```
-
-博客开发地址：`http://127.0.0.1:4321/W_KN/`。默认配置已对应 `22935/W_KN`，GitHub Actions 会按实际 Pages 配置覆盖。
-
-全文搜索需要生产索引，使用以下命令体验完整博客：
-
-```powershell
-npm run build
-npm run preview
-```
-
-另开一个终端启动创作台：
-
-```powershell
+npm run build:studio
 npm run studio
 ```
 
-**打开终端输出的完整地址**，其中包含本次启动的会话密钥。仅打开 `http://127.0.0.1:4310/` 不会进入已认证会话。重启工作台后请使用新链接。
+打开终端输出的**完整会话链接**。工作台默认监听 `127.0.0.1:4310`，会话在重启后失效。端口冲突时设置 `$env:STUDIO_PORT='4311'`。当前版本用于本机，不要直接映射到公网。
 
-端口冲突时，在 PowerShell 中设置 `$env:STUDIO_PORT='4311'` 再运行。请保持绑定在本机回环地址，不要将本地工作台映射到公网。
-
-## 已实现
-
-- 博客首页、文章列表、分类与标签筛选、分页、归档、关于页、404。
-- 明暗主题、响应式导航、键盘搜索、静态全文索引、RSS、站点地图与分享元信息。
-- 中文阅读排版、桌面目录与移动端折叠目录、阅读进度、代码高亮与复制、表格、KaTeX 公式、前后篇导航。
-- 本地 Markdown 编辑与预览、私有草稿、图片插入、删除文章、写入博客内容目录、提交文章并 Git 推送。
-- CSDN 详情链接批量导入、主页可见链接发现、HTML / Markdown 文件导入、来源去重、CSDN 图片本地化、逐篇迁移报告。
-- 同平台多个账号的独立 Chrome / Chromium 会话、批量生成交付 ZIP、内容版本去重、分发记录、人工发布地址记录。
-- CSDN / 掘金 / 知乎浏览器编辑器辅助填入，及 Wechatsync 网页 SDK 的隔离交付入口。
-
-当前公开内容为已迁移的本人 CSDN 文章。原先 6 篇排版示例已移入 `docs/examples/posts/`，不进入博客和搜索。详细迁移范围与未完成项见 [迁移报告](docs/migration/2026-11-15-csdn.md)。
-
-## 功能边界
-
-GitHub Pages 只承载静态博客。编辑、迁移、图片处理和分发任务在自己的电脑上运行，需要本地工作台保持启动。
-
-| 能力 | 当前状态 |
-| --- | --- |
-| 博客构建、页面交互与静态搜索 | 已在本地浏览器验证 |
-| Markdown / CSDN HTML 迁移、去重与图片处理 | 有自动化测试；还需用你的真实文章核对 |
-| 多账号隔离目录与内容分发交付文件 | 已实现，交付文件及同平台双账号任务已测试 |
-| 浏览器自动填入编辑器 | 实验能力；未用你的真实账号验证，平台改版时可能失败 |
-| Wechatsync 转交 | 依据上游接口实现；本地测试使用模拟 SDK，不代表所有平台的真实发布已通过 |
-| 无人值守自动完成所有平台的最终发布 | 不作此承诺；登录、验证码、图片重传、审核和最终提交可能需要在平台中操作 |
-| GitHub Pages | 已配置目标 `22935/W_KN` 和 Actions 工作流；请以 Actions 与实际公开地址为准 |
-
-工作台不会把“已打开页面”“已生成文件”或“已填入正文”显示为远端发布成功。你手动确认的链接会标为“作者确认已发布”，并说明未独立核验远端可见性。
-
-## 换成自己的站点
-
-编辑 `src/config.ts` 中的站名、作者、介绍、社交地址。导航、页脚、关于页会读取配置；首页主视觉文案在 `src/pages/index.astro`。当前站名为“山外山”，作者标识为 WKN。
-
-文章文件在 `src/content/posts/`：
-
-```markdown
----
-title: 我的第一篇文章
-description: 用一句话介绍这篇文章。
-date: 2026-11-14
-category: 随笔手记
-tags: [记录, 生活]
-cover: images/river.svg
-sample: false
-draft: false
----
-
-## 正文从这里开始
-
-写下你的文字。
-```
-
-不希望公开的草稿请保存在工作台，工作台会写入 `.local/`。手动放进 `src/content/posts/` 的文件即使设置 `draft: true` 不参与网站构建，源文件仍可能随 Git 提交公开。
-
-### 图片
-
-工作台的“插入图片”支持 PNG、JPEG、GIF、WebP，最大 5 MB。图片先放在 `.local/assets/`；文章写入公开内容目录时，仅复制正文引用的图片到 `src/assets/imported/`，由 Astro 生成适合仓库子路径的资源。
-
-封面可以使用 `images/river.svg`、`images/moon.svg`、`images/mountains.svg` 或 HTTPS 图片链接。迁移图片作为封面时，使用 `images/imported/文件名`，工作台会复制到公开资源目录。
-
-不要依赖 CSDN 防盗链图片长期可用。外部非 CSDN 图片保留原链接，并在迁移报告中提示人工核对。
-
-## CSDN 迁移
-
-1. 在创作台进入“内容迁移”。
-2. 输入自己的 CSDN 主页，发现当前页面可见文章；也可以直接粘贴多条详情链接，每行一条。
-3. 导入为本地草稿，检查逐篇报告。主页发现只扫描返回的 HTML，**不代表已遍历全部历史分页**。
-4. 如果遇到登录或验证限制，在浏览器保存本人文章的完整 HTML 后导入；已有 Markdown 可以直接导入。
-5. 检查日期、代码、表格、图片和摘要，确认后写入博客目录。
-
-Markdown 优先读取 Front Matter；无 Front Matter 时，使用一级标题或文件名作为标题，日期默认为导入当天。CSDN 来源 ID 相同的文章不会覆盖已编辑的本地草稿。若确实需要重新导入，可先导出备份，再删除旧草稿。
-
-本人 CSDN 主页为 https://blog.csdn.net/Hismybestlove 。2026-11-15 已核对 78 个文章链接，成功迁移 23 篇与 245 张本地图片；后续读取再次遇到 HTTP 521 安全验证，55 篇待验证或导入导出文件后继续。公式图片已转为本地 KaTeX，不再依赖 CSDN 公式服务。
-
-## 多平台与多账号
-
-1. 在“平台与账号”中添加平台和备注名。账号记录只是目标标识，不等于已经登录。
-2. 点击“打开登录窗口”，在隔离的浏览器中登录。每个账号的会话放在 `.local/profiles/账号ID/`，同平台不同账号不会共用一个目录。
-3. 在“分发任务”中选择文章，勾选账号。
-4. 稳定模式生成 ZIP，包含 Markdown、HTML、图片和清单；实验模式进一步打开对应编辑器、尝试填入标题与正文。
-5. 在平台检查图片和排版，完成平台要求的元数据、保存、审核或发布。
-6. 最终文章可见后，在任务中记录地址。网络中断或失败后先核对远端，再使用“核对后重新准备”。
-
-图片自动上传到各平台尚未实现，浏览器辅助模式会提示重新上传本地图片。微信公众号编辑器依赖登录后的动态地址，当前提供独立窗口、交付文件与扩展交付。
-
-浏览器辅助使用已安装的 Chrome；没有 Chrome 时可安装项目使用的 Chromium：
+博客开发与生产预览：
 
 ```powershell
-npx playwright install chromium
-```
+npm run dev
+# http://127.0.0.1:4321/W_KN/
 
-可选的 Wechatsync 通过官方网页 `syncPost` 接口启动。确认分享后，文章会被交给另一个本地端口的页面，该页面只接收所选文章，不接收工作台会话、其他草稿、账号列表或浏览器资料。交付页有效期 30 分钟；其 SDK 需要网络和兼容版本的浏览器扩展，平台成功状态要在扩展与平台内核对。来源和许可说明见 `THIRD_PARTY.md`。
-
-## 部署到 GitHub Pages
-
-需要一个你有权限推送的 GitHub 仓库。若当前目录尚无 Git 仓库，在项目根目录执行（将地址替换为自己的仓库）：
-
-```powershell
-git init -b main
-git add .
-git commit -m "feat: create personal journal"
-git remote add origin https://github.com/你的用户名/你的仓库名.git
-git push -u origin main
-```
-
-操作前确认 `.gitignore` 生效，**不要提交 `.local/`**。其中包含私有草稿、账号会话与任务数据。已有 Git 仓库时不要重复初始化或覆盖远端配置。
-
-在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。`.github/workflows/deploy.yml` 会在 `main` / `master` 推送时测试、构建并部署，也可手动运行。
-
-工作流通过 `configure-pages` 自动配置站点域名和仓库子路径，兼容 `用户名.github.io` 与普通项目仓库。推送源码不等于部署完成，请以 Actions 的部署结果为准。
-
-本地模拟项目仓库路径：
-
-```powershell
-$env:SITE_URL='https://yourname.github.io'
-$env:BASE_PATH='/your-repository/'
 npm run build
 npm run preview
 ```
 
-自定义域名时设置 GitHub Pages 的 Custom domain，并按实际域名调整 `SITE_URL` / `BASE_PATH`。
+`npm run build` 同时构建工作台和博客；Pages 部署产物仅为根目录 `dist/`，工作台构建目录 `apps/studio/dist/` 不包含在公开产物中。全文搜索需生产构建生成索引。
 
-首次上线需要提交整个项目。本地工作台的 Git 按钮只提交文章和迁移图片，不会替你提交代码、覆盖远端设置或处理已有暂存内容。
+修改工作台前端时，先在运行 API 的终端设置 `$env:YANSHAN_DEV_ORIGIN='http://127.0.0.1:5173'` 后启动 `npm run studio`，再另开终端运行 `npm run dev:studio`。Vite 默认代理到 API 的 `4310` 端口；使用启动终端中的 token 在 Vite 地址的 `/#token=...` 登录开发会话，端口变更时同时调整开发代理。正式本机使用由 API 同源托管的构建版。
 
-## 检查与测试
+## 当前可用能力
+
+| 模块           | 已可用                                                                                   | 尚未交付                                           |
+| -------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 公开博客       | 首页、分类、标签、归档、全文搜索、RSS、站点地图、主题、长文目录、代码、公式              | 公共互动与账号系统                                 |
+| 内容库         | 文章 / 笔记 / 论文 / 图解统一文档，项目、标签、状态、搜索和筛选                          | 跨模态全文检索                                     |
+| 写作           | Markdown 源码与清理后的预览、KaTeX、图片与资源关联、版本冲突检测、手动快照、正文导出     | Tiptap 块编辑与拖拽排序                            |
+| 论文书架       | PDF 资源导入、浏览器原生 PDF 查看、标题 / DOI / 作者 / 年份、概览 / 结构 / 精读三层笔记  | 页码批注、文本提取、双语对照与自动翻译             |
+| 图解工坊       | Mermaid 编辑 / 预览 / 保存 / 源码导出，draw.io 源文件上传和下载                          | draw.io 嵌入编辑、科研绘图引擎、动态图解与图像导出 |
+| 资源与模板     | 图片 / PDF / Markdown / draw.io 资源管理，文档关联、引用保护、内置写作 / 图解 / 提示模板 | 模板参数编辑器与科研图形模板引擎                   |
+| AI 助手        | 提示准备与复制、自定义提示模板、润色 / 翻译 / 摘要的手动输入输出记录                     | 模型供应商调用、密钥管理、流式结果与差异采纳       |
+| 发布中心       | 写入公开目录，GitHub / Gitee 双远端同步，保留旧迁移与多账号交付流程                      | 任意平台无人值守最终发布                           |
+| 数据管理       | SQLite 持久化、旧草稿迁移、版本化 ZIP 备份和停服恢复                                     | 多设备自动同步                                     |
+| LaTeX 与服务器 | 已定义扩展边界，当前可使用 Markdown 中的公式                                             | `.tex` 项目管理、隔离编译、服务器认证与部署编排    |
+
+论文、图解和资源公开栏目只展示主动公开的文章或作品，私人论文、任务记录和资源不自动进入博客。未完成的模型调用或编译不会显示为执行成功。
+
+## 写作与发布
+
+1. 从“落笔写作”创建文章，编辑标题、摘要和正文；文档属性中可以选择项目、日期、分类、标签与状态。
+2. 添加图片或关联资源，保存到本机。保存后可创建版本快照；载入快照会成为未保存修改稿。
+3. 核对内容后选择“写入公开目录”。此步骤将文章和图片写入博客源码，不等于线上已更新。
+4. 在发布中心“提交公开内容并同步”，分别查看 GitHub 与 Gitee 的结果，再核对 GitHub Actions 的 Pages 构建。
+
+现有文章公开源文件仍保留在 `src/content/posts/`，迁移图片在 `src/assets/imported/`，已有 URL 不变。第一阶段暂不移动公开内容目录，避免破坏图片相对路径与导入脚本。手动放进 Git 的草稿即使 `draft: true` 不参与构建，源码仍可能随提交公开；私有草稿应在工作台保存。
+
+同一文档两处编辑时，过期版本保存返回冲突，不静默覆盖。遇到服务连接失败，可以先使用编辑器“导出”保存未保存正文，再重连。
+
+公开站品牌由 `src/site.json` 管理，作者和链接由 `src/config.ts` 管理。在设置页保存品牌只更新本机配置；点击“导出到博客”才写入公开源文件。英文名暂用 YANSHAN，工作名可继续更改。
+
+## CSDN 迁移
+
+进入发布中心的“CSDN 内容迁移”，可粘贴详情链接、发现主页可见文章，或导入本人导出的 Markdown / 完整 HTML。迁移前后保留原始日期、来源、代码、公式和图片；来源 ID 去重，已有草稿不会被新抓取覆盖。
+
+2026-11-15 已迁移 **28/78 篇**，公开资源目录有 **254 个去重图片文件**。本轮新增 5 篇与 10 次图片引用，其中 9 个文件为新增；其余 50 篇再次遇到 HTTP 521 后停止。详细清单见 [迁移报告](docs/migration/2026-11-15-csdn.md)。不使用摘要或占位文章冒充迁移成功。
+
+```powershell
+npm run migrate:csdn -- Hismybestlove
+```
+
+命令跳过已有文章，遇到验证暂停。原始 HTML、缓存和完整 JSON 报告保存在 `.local/migration/`。受限时可以在自己的浏览器正常完成验证，或使用本人已有导出文件。旧迁移、账号和分发界面位于 `/legacy/`，与统一工作台共享当前会话与数据库。
+
+## 多平台与多账号
+
+发布中心链接到现有的“平台与账号”“分发任务”。同平台的不同账号使用各自的 `.local/profiles/账号ID/`，由作者在独立浏览器里登录，不要求在工作台输入平台密码。
+
+选择文章及目标账号，可生成 Markdown / HTML / 图片 ZIP 包，或尝试填入 CSDN、掘金、知乎编辑器。公众号与 Wechatsync 使用隔离交付页。图片重传、验证码、必填元数据、最终提交与审核可能仍需在平台操作。准备文件、打开编辑器、填入正文、作者手动确认链接均有独立状态，不能当作系统已核验发布成功。
+
+适配器有模拟与浏览器测试，但未使用你的真实平台账号逐个验证最终发布。Wechatsync 为可选网络 SDK，来源及许可说明见 [THIRD_PARTY.md](THIRD_PARTY.md)。没有 Chrome 时可运行 `npx playwright install chromium`。
+
+## 本地数据、备份与恢复
+
+- `.local/yanshan.sqlite`：内容、版本、资源索引、项目、模板、任务、账号标识和分发状态。
+- `.local/assets/`：私有上传文件。
+- `.local/state.pre-sqlite.json`：首次迁移前的旧状态备份，存在时不会覆盖。
+- `.local/state.json`：旧数据来源，迁移后不再作为可写主库。
+- `.local/profiles/`：浏览器登录会话；不提交 Git。
+
+首次启动会校验旧 JSON，再按稳定 ID 迁移。错误或不完整数据会阻止启动，不用空库覆盖旧数据。公开仓库文章按来源或公开 ID 导入内容库，重复启动不重复生成。
+
+设置页的“导出数据与资源”生成 ZIP，包含一致的 SQLite 快照、本地资源、交付文件及哈希清单。**备份是私有数据**，请保存在自己的安全位置。浏览器会话、抓取缓存与仓库中已有的公开图片不在此 ZIP 内；完整迁移请同时保留仓库。被文档引用的资源拒绝删除；删除资源记录后保留磁盘文件以供恢复，不立即物理擦除。
+
+恢复需停止所有正在使用该数据目录的工作台，然后：
+
+```powershell
+$env:YANSHAN_RESTORE='D:\Backups\yanshan-2026-11-15.zip'
+npm run studio
+# 恢复并启动成功后，清除变量，避免下次重复恢复：
+Remove-Item Env:YANSHAN_RESTORE
+```
+
+恢复会校验版本、ZIP 路径、大小、哈希与数据库完整性，并保留原数据库为 `.local/pre-restore-时间戳.sqlite`。同一数据目录只启动一个服务进程；恢复不是并发运行时的同步功能。
+
+## 架构与部署
+
+```text
+apps/site/             Astro 应用入口，复用根目录公开内容与页面
+apps/studio/           React + Vite + TypeScript 私人工作台
+apps/api/              Express API、会话、资源、预览与模块路由
+packages/content/      文档与任务 schema、内容类型
+packages/storage/      SQLite、旧数据适配、备份与恢复
+packages/ui/           明暗主题设计 token
+packages/publishers/   现有 Git 与分发模块的接入边界
+src/                   公开博客页面、文章与样式（兼容保留）
+studio/lib/            已验证的导入、图片、交付与 Git 适配器
+studio/web/            旧迁移与多账号辅助界面
+.local/                私有数据（已忽略）
+tests/                 单元、API、浏览器与部署验证
+```
+
+统一 API 在 `/api/v1`，旧 `/api` 路由用于兼容辅助工具。结构化块保留版本化内容契约；当前写作仍以 Markdown 源码为编辑来源，不承诺任意格式无损转换。
+
+GitHub Pages 在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。推送 `main` 后工作流测试、构建并部署，自动配置域名及仓库子路径。Gitee 同步是源码备份，不代表已经启用 Gitee Pages。保持两个实际远端后可以运行：
+
+```powershell
+npm run sync
+```
+
+该命令推送当前分支的现有提交，不自动提交、不强制覆盖；某个远端失败会显示各自结果。GitHub 网页产生的提交仍需本机拉取再同步。
+
+未来服务器会沿用同一 API 与 SQLite 数据格式，通过备份迁移。本版本尚未交付公网登录、HTTPS 反向代理或服务器编排，不将本地端口开放视为服务器部署。
+
+## 检查
 
 ```powershell
 npm test
 npm run check
 npm run build
+npm run test:platform
 npm run test:e2e
 npm run test:deployment
 ```
 
-浏览器测试需要 Chrome 或已安装的 Playwright Chromium。测试使用临时目录，不会把测试文章、账号与任务写入你的 `.local/`。截图保存在 `test-results/`，此目录已忽略。
+浏览器流程使用临时数据，不向你的 `.local/` 写测试记录。截图在已忽略的 `test-results/`。部署检查会短暂创建测试文章并重新构建，运行时不要另起构建。测试覆盖旧数据迁移、版本冲突、引用保护、备份恢复与路径校验、会话鉴权、真实页面模块保存、公式 / 图解、响应式布局、旧迁移和双账号交付。
 
-`test:deployment` 会临时创建带标记的测试文章和图片，实际验证 GitHub 仓库子路径、图片构建、脚本清理与草稿隔离；结束时移除这些测试文件并恢复默认构建。运行时请避免同时启动另一次构建。
-
-测试覆盖：Markdown 往返、日期校验、CSDN 解析与来源去重、脚本清理、抓取地址白名单、图片失败与路径、并发保存、同平台双账号任务、版本去重、状态语义、第三方交付隔离、桌面与手机导航、全文搜索、主题、编辑插图、草稿保存及公开文件生成。
-
-## 目录
-
-```text
-src/components/       博客组件
-src/content/posts/    公开文章源文件
-src/layouts/          页面框架与搜索交互
-src/pages/            静态路由、文章、RSS
-src/styles/           博客样式
-public/images/        原创山水 SVG
-studio/lib/           导入、发布、任务、图片、本地数据模块
-studio/web/           创作台界面
-studio/server.mjs     本地 API 与会话验证
-.local/               私有数据，不提交 Git
-tests/                自动化与浏览器测试
-.github/workflows/    GitHub Pages 部署
-docs/superpowers/     已确认设计与实施记录
-```
-
-本项目没有硬编码平台密码、Cookie 或 GitHub Token。Git 推送使用本机已配置的认证。
-
-## 同步 GitHub 与 Gitee
-
-本机保留 `origin` 为 GitHub。在拿到自己的实际 Gitee 地址后添加第二个远端：
-
-```powershell
-git remote add gitee https://gitee.com/你的用户名/你的仓库.git
-npm run sync
-```
-
-当前已配置并验证的 Gitee 远端为 `https://gitee.com/mythksw/W_KN.git`，`main` 与 GitHub 同步到提交 `94a10fc`。
-
-`npm run sync` 不自动提交，只将当前分支同一提交依次推送到 GitHub 与 Gitee；不强制推送。工作台“提交内容并推送”同样使用两个远端，分别显示结果。Gitee 失败时会报告“部分推送完成”，不会隐藏 GitHub 已成功的结果。重试 `npm run sync` 无须重复提交。
-
-Gitee 仓库若有不同历史，需要先正常合并，再同步。Gitee 镜像不等于已配置 Gitee Pages，本项目公开站点由 GitHub Pages 承载。GitHub 网页上直接产生的提交也需要本机拉取后再运行同步；当前未配置在 GitHub 保存 Gitee 私钥的云端镜像流程。
-
+后续实施范围与决策见 [平台设计](docs/superpowers/specs/2026-11-15-yanshan-platform-design.md) 和 [实施计划](docs/superpowers/plans/2026-11-15-yanshan-platform.md)。

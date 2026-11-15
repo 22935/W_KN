@@ -35,7 +35,7 @@ test('浏览器端到端验收：博客与独立本地工作台',{timeout:180000
   const page=await context.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await mkdir(join(project,'test-results'),{recursive:true});
   await t.test('首页、分类和主题持久化',async()=>{
-    await page.goto(blog);assert.match(await page.title(),/山外山/);
+    await page.goto(blog);assert.match(await page.title(),/砚山/);
     await page.locator('[data-category]').filter({hasText:primaryCategory}).click();assert.equal(await page.locator('[data-post-category]:visible').count(),Math.min(6,publicPosts.filter(p=>p.category===primaryCategory).length));
     await page.locator('[data-category="all"]').click();await page.locator('.theme-toggle').click();const theme=await page.locator('html').getAttribute('data-theme');await page.reload();assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
     await page.evaluate(()=>{document.documentElement.dataset.theme='light';localStorage.setItem('wkn-theme','light');});
@@ -60,12 +60,12 @@ test('浏览器端到端验收：博客与独立本地工作台',{timeout:180000
     await page.goto(blog);await page.screenshot({path:join(project,'test-results/blog-mobile.png'),fullPage:true});await page.setViewportSize({width:1440,height:1000});
   });
   await t.test('本地 Markdown 编辑、图片上传、私有保存与写入公开目录',async()=>{
-    await page.goto(`${studio.origin}/#token=${studio.token}`);await page.waitForFunction(()=>document.querySelector('#post-count')?.textContent==='6');
+    await page.goto(`${studio.origin}/legacy/#token=${studio.token}`);await page.waitForFunction(()=>document.querySelector('#post-count')?.textContent==='6');
     await page.screenshot({path:join(project,'test-results/studio-desktop.png'),fullPage:true});
     await page.locator('#new-post').click();await page.locator('[name="title"]').fill('浏览器验收文章');await page.locator('[name="description"]').fill('本地工具完整流程验证');await page.locator('#body-editor').fill('## 测试标题\n\n这是本地草稿中的私有正文。');
     await page.locator('#editor-image').setInputFiles({name:'small.png',mimeType:'image/png',buffer:png});await page.waitForFunction(()=>document.querySelector('#body-editor').value.includes('/images/imported/'));
     await page.locator('#save-draft').click();await page.waitForFunction(()=>document.querySelector('#editor-status').textContent.includes('已保存'));
-    assert.ok((await readFile(join(root,'.local/state.json'),'utf8')).includes('私有正文'));
+    assert.ok((await page.evaluate(async()=>JSON.stringify(await(await fetch('/api/state',{headers:{Authorization:'Bearer '+sessionStorage.getItem('wkn-session')}})).json()))).includes('私有正文'));
     await page.locator('#write-public').click();await page.locator('#confirm-dialog button[value="confirm"]').click();await page.waitForFunction(()=>document.querySelector('#editor-status').textContent.includes('已写入博客仓库'));
     await page.locator('[data-view="overview"]').click();await page.locator('[data-list="posts"]').click();await page.waitForFunction(()=>document.querySelector('#article-list').textContent.includes('浏览器验收文章'));assert.ok((await page.locator('#article-list').innerText()).includes('浏览器验收文章'));
   });

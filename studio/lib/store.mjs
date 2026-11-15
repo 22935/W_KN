@@ -1,14 +1,12 @@
-import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
-import { join } from 'node:path';
+import { openPlatform } from '../../packages/storage/index.mjs';
 
 export async function createStore(root) {
-  await mkdir(root,{recursive:true});
-  const file=join(root,'state.json');
+  const platform=await openPlatform(root);
   let chain=Promise.resolve();
-  async function read(){try{return JSON.parse(await readFile(file,'utf8'));}catch(error){if(error.code==='ENOENT')return{drafts:[],accounts:[],jobs:[]};throw error;}}
+  async function read(){return platform.legacyRead();}
   async function update(fn){
-    const work=chain.then(async()=>{const state=await read();const result=await fn(state);const temporary=`${file}.tmp`;await writeFile(temporary,JSON.stringify(state,null,2));await rename(temporary,file);return result;});
+    const work=chain.then(async()=>{const state=await read();const result=await fn(state);platform.legacyWrite(state);return result;});
     chain=work.catch(()=>{});return work;
   }
-  return {read:async()=>{await chain;return read();},update,root};
+  return {read:async()=>{await chain;return read();},update,root,platform,close:()=>platform.close()};
 }

@@ -6,10 +6,10 @@ import { site, url } from '../config';
 import Icon from '../components/Icon.astro';
 interface Props { title?: string; description?: string; image?: string; article?: boolean; }
 const { title, description = site.description, image = 'images/mountains.svg', article = false } = Astro.props;
-const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · 在山海之间，记录与生长`;
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · 让文字有形，让思考成山`;
 const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url);
 const current = Astro.url.pathname.replace(import.meta.env.BASE_URL, '/');
-const links = [{ label: '首页', path: '' }, { label: '文章', path: 'journal/' }, { label: '归档', path: 'archive/' }, { label: '关于', path: 'about/' }];
+const links = [{ label: '首页', path: '' }, { label: '文章', path: 'journal/' }, { label: '论文', path: 'papers/' }, { label: '图解', path: 'diagrams/' }, { label: '资源', path: 'resources/' }, { label: '关于', path: 'about/' }];
 ---
 <!doctype html>
 <html lang="zh-CN">
