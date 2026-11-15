@@ -1,0 +1,35 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, dateLabel, readingTime, type Post } from '../../lib/posts';
+import { site, url } from '../../config';
+export async function getStaticPaths(){return(await getPosts()).map(post=>({params:{id:post.id},props:{post}}));}
+interface Props {post:Post;}
+const {post}=Astro.props;
+const {Content,headings}=await render(post);
+const toc=headings.filter(h=>h.depth>=2&&h.depth<=4);
+const posts=await getPosts();const index=posts.findIndex(p=>p.id===post.id);const previous=posts[index+1];const next=posts[index-1];
+const cover=post.data.cover ? (/^https?:/.test(post.data.cover)?post.data.cover:url(post.data.cover)):null;
+const schema={'@context':'https://schema.org','@type':'BlogPosting',headline:post.data.title,description:post.data.description,datePublished:post.data.date.toISOString(),author:{'@type':'Person',name:site.author},mainEntityOfPage:new URL(Astro.url.pathname,Astro.site)};
+---
+<Base title={post.data.title} description={post.data.description} image={post.data.cover} article>
+  <script type="application/ld+json" set:html={JSON.stringify(schema).replaceAll('<',String.fromCharCode(92)+'u003c')}/><div class="reading-progress" aria-hidden="true"></div>
+  <div class="container article-layout"><article data-pagefind-body><header class="article-header"><nav class="breadcrumb" aria-label="面包屑" data-pagefind-ignore><a href={url()}>首页</a><span>/</span><a href={url('journal/')}>文章</a><span>/</span><span>{post.data.category}</span></nav><div class="post-meta"><a href={url(`journal/?category=${encodeURIComponent(post.data.category)}`)}>{post.data.category}</a><span>·</span><time datetime={post.data.date.toISOString()}>{dateLabel(post.data.date)}</time><span>·</span><span>{readingTime(post.body)} 分钟阅读</span></div><h1 data-pagefind-meta="title">{post.data.title}</h1><p class="article-description">{post.data.description}</p></header>
+  {post.data.sample&&<aside class="sample-notice" data-pagefind-ignore>示例文章 · 用于展示博客排版，可在本地创作台删除或替换。</aside>}
+  {cover&&<img class="article-cover" src={cover} alt={`${post.data.title}的封面插画`} width="1000" height="500"/>}
+  {toc.length>0&&<details class="mobile-toc" data-pagefind-ignore><summary>本文目录 · {toc.filter(h=>h.depth===2).length} 个章节</summary>{toc.map(h=><a href={`#${h.slug}`}>{h.text}</a>)}</details>}
+  <div class="prose"><Content/></div>
+  {post.data.source&&<p class="sample-notice" style="margin-top:30px">迁移自 <a href={post.data.source} target="_blank" rel="noopener noreferrer">CSDN 原文 ↗</a> · 保留原始发布日期</p>}
+  <div class="article-end" data-pagefind-ignore><div class="tags">{post.data.tags.map(tag=><a href={url(`journal/?tag=${encodeURIComponent(tag)}`)}>#{tag}</a>)}</div><button id="copy-link">复制文章链接 ↗</button></div>
+  <nav class="article-neighbors" data-pagefind-ignore>{previous?<a href={url(`posts/${previous.id}/`)}><small>← 上一篇</small><h3>{previous.data.title}</h3></a>:<span/>}{next?<a href={url(`posts/${next.id}/`)}><small>下一篇 →</small><h3>{next.data.title}</h3></a>:<span/>}</nav>
+  </article><aside class="article-aside" data-pagefind-ignore><nav class="toc" aria-label="文章目录"><h2>本篇目录 / CONTENTS</h2>{toc.map(h=><a class={`depth-${h.depth}`} href={`#${h.slug}`}>{h.text}</a>)}<a href="#main" style="margin-top:22px">回到文章开头 ↑</a></nav></aside></div>
+</Base>
+<script>
+  const toast=(text:string)=>{const t=document.querySelector<HTMLElement>('#toast')!;t.textContent=text;t.classList.add('visible');setTimeout(()=>t.classList.remove('visible'),2500);};
+  document.querySelector('#copy-link')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);toast('文章链接已复制');}catch{toast('无法访问剪贴板，请复制浏览器地址栏');}});
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre=>{const button=document.createElement('button');button.className='copy-code';button.textContent='复制代码';button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(pre.querySelector('code')?.textContent||'');button.textContent='已复制';setTimeout(()=>button.textContent='复制代码',1800);}catch{toast('复制失败，请手动选择代码');}});pre.append(button);});
+  const observer=new IntersectionObserver(entries=>{for(const entry of entries){if(entry.isIntersecting){document.querySelectorAll('.toc a').forEach(a=>a.classList.toggle('current',a.getAttribute('href')===`#${entry.target.id}`));}}},{rootMargin:'-10% 0px -70% 0px'});
+  document.querySelectorAll('.prose h2,.prose h3').forEach(h=>observer.observe(h));
+  let pending=false;const update=()=>{const article=document.querySelector('article')!;const bounds=article.getBoundingClientRect();const total=article.offsetHeight-innerHeight;const progress=Math.max(0,Math.min(1,-bounds.top/Math.max(1,total)));document.querySelector<HTMLElement>('.reading-progress')!.style.width=`${progress*100}%`;pending=false;};
+  addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(update);}},{passive:true});update();
+</script>

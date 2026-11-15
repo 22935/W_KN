@@ -1,0 +1,6 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, url } from '../config';
+import Icon from '../components/Icon.astro';
+---
+<Base title="关于这里"><div class="container"><section class="page-intro"><span class="eyebrow">ABOUT THIS PLACE / 见字如面</span><h1>山外有山，心有所往。</h1><p>一个收纳文字、想法与灵感的小小角落。</p></section><section class="about-layout"><img class="about-art" src={url('images/river.svg')} alt="原创青绿山水与一叶小舟" width="1000" height="650"/><div class="about-copy"><span class="eyebrow">HELLO, WANDERER / {site.author}</span><h2>欢迎，来到{site.name}。</h2><p>{site.intro} 在这里，文字可以慢一点，思考可以长一点。希望每一段值得记录的探索，都有一个能够安放的地方。</p><p>这里收录我在人工智能、编程与软件开发路上的学习笔记。曾经写在 CSDN 的文字，也正在陆续搬来；迁移文章保留原文链接，让每一次探索都有迹可循。</p><p>“山外山”，意为始终保有对更远处的好奇。不急着抵达答案，先认真走好脚下的每一步。</p><a class="outline-button" href={url('rss.xml')}><Icon name="rss" size={16}/>订阅这里的文字</a><div class="about-facts"><span>文字 / 记录 / 创造</span><a href={site.csdn} target="_blank" rel="noopener noreferrer">CSDN ↗</a>{site.github&&<a href={site.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}{site.email&&<a href={`mailto:${site.email}`}>联系作者 ↗</a>}</div></div></section></div></Base>

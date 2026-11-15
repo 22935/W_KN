@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts } from '../lib/posts';
+import { url } from '../config';
+const posts = await getPosts();
+const categories = [...new Set(posts.map(p => p.data.category))];
+---
+<Base>
+  <section class="hero container">
+    <div class="hero-copy"><div class="eyebrow"><span class="tiny-line"></span> A PERSONAL JOURNAL <span class="edition">VOL. 01 / 始于此刻</span></div><h1>行至山海，<br/>落笔<span class="accent">人间。</span><span class="title-seal">记<br/>录</span></h1><p class="hero-description">在代码中构建，在生活里感知。<br/>把一路的探索与微小的心动，写成值得留下的文字。</p><a class="primary-button" href={url('journal/')}>翻开我的手记 <Icon name="arrow" size={18}/></a><div class="hero-note"><span class="live-dot"></span>保持好奇，慢慢生长<span class="note-line"></span><span class="handwritten">山外有山，心有所往。</span></div></div>
+    <div class="hero-art"><div class="art-frame"><img src={url('images/mountains.svg')} alt="原创山水插画：青绿层山、云雾与一轮暖日" width="1400" height="900" fetchpriority="high"/><div class="art-vertical">山川异域 · 日月同天</div><span class="art-seal">山<br/>外<br/>山</span><span class="art-coordinate">30° N / 120° E · 意象山水</span></div><div class="art-caption"><span>山不言，自有回响。</span><span>LANDSCAPES OF THE MIND <span class="caption-star">✳</span></span></div></div>
+  </section>
+  <section class="container journal-section" id="journal"><div class="section-heading"><div><span class="eyebrow">THE JOURNAL</span><h2>最近，落下的文字<span class="heading-dot">。</span></h2></div><a class="text-link" href={url('journal/')}>全部文章 <Icon name="arrow" size={17}/></a></div><div class="category-bar"><div class="category-tabs"><button class="category-tab active" data-category="all">全部文章 <sup>{posts.length.toString().padStart(2,'0')}</sup></button>{categories.map(category => <button class="category-tab" data-category={category}>{category}</button>)}</div><span class="category-caption">一些思考，一些实践，一些日常。</span></div><div class="post-grid">{posts.map((post,index) => <div data-post-category={post.data.category} hidden={index >= 6}><PostCard post={post} index={index}/></div>)}</div><p id="category-empty" hidden class="empty-state">这个分类还没有文章，新的文字正在路上。</p><div class="more-row"><a class="outline-button" id="more-articles" href={url('journal/')}>去往更多文字 <Icon name="arrow" size={17}/></a><span>慢一点，也没关系。</span></div></section>
+  <section class="container closing-note"><div class="closing-mark">“</div><div><h2>写作，是与自己重逢的方式。</h2><p>这里没有标准答案，只有一个人对世界持续的好奇。<br class="desktop-only"/>愿这些文字，恰好也能为你带来一点灵感。</p></div><a href={url('about/')} class="text-link">认识一下 <Icon name="arrow" size={17}/></a><span class="closing-flower">✳</span></section>
+</Base>
+<script>
+  import { url } from '../config';
+  document.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));button.classList.add('active');
+    let count=0;document.querySelectorAll<HTMLElement>('[data-post-category]').forEach(card => {const matches=button.dataset.category === 'all' || card.dataset.postCategory === button.dataset.category;card.hidden=!matches||count>=6;if(matches)count++;});
+    document.querySelector<HTMLElement>('#category-empty')!.hidden = count>0;document.querySelector<HTMLAnchorElement>('#more-articles')!.href=url('journal/')+(button.dataset.category==='all'?'':'?category='+encodeURIComponent(button.dataset.category!));
+  }));
+</script>

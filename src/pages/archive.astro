@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import { getPosts, dateLabel } from '../lib/posts';
+import { url } from '../config';
+import Icon from '../components/Icon.astro';
+const posts=await getPosts();
+const years=[...new Set(posts.map(p=>p.data.date.getUTCFullYear()))];
+---
+<Base title="文章归档"><div class="container"><section class="page-intro"><span class="eyebrow">THE ARCHIVE / 岁月留痕</span><h1>把时光，折进书页。</h1><p>沿着时间的线索，重访每一次记录。这里共有 {posts.length} 篇公开文章。</p></section>{years.map(year=><section class="archive-year"><h2>{year}<span class="heading-dot">.</span></h2><div>{posts.filter(p=>p.data.date.getUTCFullYear()===year).map(post=><a class="archive-row" href={url(`posts/${post.id}/`)}><time>{dateLabel(post.data.date).slice(5)}</time><h3>{post.data.title}</h3><span class="archive-category">{post.data.category}</span><Icon name="arrow" size={16}/></a>)}</div></section>)}{!posts.length&&<p class="empty-state">第一篇文字，正在路上。</p>}</div></Base>

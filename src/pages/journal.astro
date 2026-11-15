@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts } from '../lib/posts';
+const posts = await getPosts();
+const categories = [...new Set(posts.map(p => p.data.category))];
+const tags = [...new Set(posts.flatMap(p => p.data.tags))];
+---
+<Base title="所有文章">
+  <div class="container"><section class="page-intro"><span class="eyebrow">THE JOURNAL / 文字集</span><h1>字里行间，皆是来路。</h1><p>一些技术的探索，一些设计的观察，还有生活里值得记住的小事。</p></section>
+  <div class="journal-controls"><label class="sr-only" for="journal-query">按标题或摘要筛选</label><input id="journal-query" type="search" placeholder="按标题、摘要筛选……"/><label class="sr-only" for="category-select">分类</label><select id="category-select" class="filter-select"><option value="">全部分类</option>{categories.map(c=><option value={c}>{c}</option>)}</select><label class="sr-only" for="tag-select">标签</label><select id="tag-select" class="filter-select"><option value="">全部标签</option>{tags.map(t=><option value={t}>{t}</option>)}</select><span class="results-count" aria-live="polite" id="results-count">共 {posts.length} 篇文章</span></div>
+  <div class="post-grid" id="journal-posts">{posts.map((post,index) => <div class="filter-post" data-category={post.data.category} data-tags={JSON.stringify(post.data.tags)} data-text={`${post.data.title} ${post.data.description}`}><PostCard post={post} index={index}/></div>)}</div><p class="empty-state" id="journal-empty" hidden>没有找到相应的文字。清空筛选，看看其他文章吧。</p>
+  <div class="pagination"><button id="prev-page" disabled>← 上一页</button><span id="page-label">1 / 1</span><button id="next-page" disabled>下一页 →</button></div></div>
+</Base>
+<script>
+  const query=document.querySelector<HTMLInputElement>('#journal-query')!;
+  const category=document.querySelector<HTMLSelectElement>('#category-select')!;
+  const tag=document.querySelector<HTMLSelectElement>('#tag-select')!;
+  const cards=[...document.querySelectorAll<HTMLElement>('.filter-post')];
+  const prev=document.querySelector<HTMLButtonElement>('#prev-page')!;
+  const next=document.querySelector<HTMLButtonElement>('#next-page')!;
+  const params=new URLSearchParams(location.search);
+  category.value=params.get('category') || '';tag.value=params.get('tag') || '';
+  let page=1;const size=9;
+  function filter(reset=true){
+    if(reset)page=1;
+    const matches=cards.filter(c=>(!category.value || c.dataset.category===category.value)&&(!tag.value || JSON.parse(c.dataset.tags!).includes(tag.value))&&(!query.value || c.dataset.text!.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())));
+    cards.forEach(c=>c.hidden=true);matches.slice((page-1)*size,page*size).forEach(c=>c.hidden=false);
+    const total=Math.max(1,Math.ceil(matches.length/size));
+    document.querySelector('#results-count')!.textContent=`共 ${matches.length} 篇文章`;
+    document.querySelector<HTMLElement>('#journal-empty')!.hidden=matches.length>0;
+    document.querySelector('#page-label')!.textContent=`${page} / ${total}`;prev.disabled=page<=1;next.disabled=page>=total;
+    const p=new URLSearchParams();if(category.value)p.set('category',category.value);if(tag.value)p.set('tag',tag.value);history.replaceState(null,'',location.pathname+(p.size?'?'+p:''));
+  }
+  query.addEventListener('input',()=>filter());category.addEventListener('change',()=>filter());tag.addEventListener('change',()=>filter());
+  prev.addEventListener('click',()=>{page--;filter(false);});next.addEventListener('click',()=>{page++;filter(false);});filter();
+</script>

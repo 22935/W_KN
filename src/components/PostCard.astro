@@ -1,0 +1,17 @@
+---
+import type { Post } from '../lib/posts';
+import { dateLabel, readingTime } from '../lib/posts';
+import { url } from '../config';
+import Icon from './Icon.astro';
+interface Props { post: Post; index?: number; }
+const { post, index = 0 } = Astro.props;
+const cover = post.data.cover || ['images/river.svg', 'images/moon.svg', 'images/mountains.svg'][index % 3];
+const coverUrl = /^https?:/.test(cover) ? cover : url(cover);
+---
+<article class="post-card">
+  <a href={url(`posts/${post.id}/`)} class="post-image" tabindex="-1" aria-hidden="true"><img src={coverUrl} alt="" width="600" height="390" loading="lazy"/><span class="cover-label">FIELD NOTES / {post.data.category}</span><span class="image-arrow"><Icon name="arrow"/></span></a>
+  <div class="post-meta"><a href={url(`journal/?category=${encodeURIComponent(post.data.category)}`)}>{post.data.category}</a><span>·</span><time datetime={post.data.date.toISOString()}>{dateLabel(post.data.date)}</time>{post.data.featured && <span class="featured-label">精选</span>}{post.data.sample && <span class="sample-label">示例</span>}</div>
+  <h3><a href={url(`posts/${post.id}/`)}>{post.data.title}</a></h3>
+  <p>{post.data.description}</p>
+  <div class="post-bottom"><span>{readingTime(post.body)} 分钟阅读</span><span class="tags">{post.data.tags.slice(0,2).map(tag => <a href={url(`journal/?tag=${encodeURIComponent(tag)}`)}>#{tag}</a>)}</span></div>
+</article>

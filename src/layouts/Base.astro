@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import '../styles/refinements.css';
+import { site, url } from '../config';
+import Icon from '../components/Icon.astro';
+interface Props { title?: string; description?: string; image?: string; article?: boolean; }
+const { title, description = site.description, image = 'images/mountains.svg', article = false } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · 在山海之间，记录与生长`;
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url);
+const current = Astro.url.pathname.replace(import.meta.env.BASE_URL, '/');
+const links = [{ label: '首页', path: '' }, { label: '文章', path: 'journal/' }, { label: '归档', path: 'archive/' }, { label: '关于', path: 'about/' }];
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content={description}/><meta name="theme-color" content="#f5f3ed"/>
+    <title>{pageTitle}</title><link rel="icon" type="image/svg+xml" href={url('favicon.svg')}/><link rel="canonical" href={canonical}/>
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={url('rss.xml')}/>
+    <meta property="og:title" content={pageTitle}/><meta property="og:description" content={description}/><meta property="og:type" content={article ? 'article' : 'website'}/><meta property="og:url" content={canonical}/><meta property="og:image" content={new URL(url(image), Astro.site || Astro.url)}/><meta name="twitter:card" content="summary_large_image"/>
+    <script is:inline>try{document.documentElement.dataset.theme=localStorage.getItem('wkn-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch{}</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳至正文</a>
+    <header class="site-header container">
+      <a class="brand" href={url()} aria-label={`${site.name}首页`}><span class="brand-symbol"><Icon name="mountain" size={29}/></span><span class="brand-name">{site.name}<small>{site.englishName}</small></span></a>
+      <nav aria-label="主导航" class="main-nav">{links.map(link => <a class:list={{ active: current === `/${link.path}` || (link.path === 'journal/' && current.startsWith('/posts/')) }} href={url(link.path)}>{link.label}<span class="nav-dot"></span></a>)}</nav>
+      <div class="header-actions"><button class="icon-button" id="search-open" aria-label="搜索文章"><Icon name="search"/><kbd>⌘ K</kbd></button><span class="action-line"></span><button class="icon-button theme-toggle" aria-label="切换深浅色主题"><span class="sun-icon"><Icon name="sun"/></span><span class="moon-icon"><Icon name="moon"/></span></button><a href={url('studio/')} class="studio-link"><Icon name="feather" size={17}/><span>创作台</span></a></div>
+    </header>
+    <main id="main"><slot/></main>
+    <footer class="container site-footer"><div><a class="footer-brand" href={url()}><Icon name="mountain" size={25}/>{site.name}</a><p>山海有归期，文字无穷尽。</p></div><div class="footer-right"><div><a href={url('about/')}>关于这里</a><a href={url('rss.xml')} aria-label="订阅 RSS"><Icon name="rss" size={16}/>RSS 订阅</a><a href="#" id="back-top">回到顶部 ↑</a></div><small>© {new Date().getFullYear()} {site.author} · 用文字，留下走过的痕迹</small></div></footer>
+    <dialog id="search-dialog" class="search-dialog"><div class="search-top"><Icon name="search"/><label class="sr-only" for="search-input">搜索文章</label><input id="search-input" placeholder="寻找一段文字、一个想法……" type="search" autocomplete="off"/><button class="icon-button" id="search-close" aria-label="关闭搜索"><Icon name="close"/></button></div><div id="search-results" aria-live="polite"><p class="search-hint">输入关键词，搜索所有文章</p></div><div class="search-foot">全文搜索 · <span>ESC 关闭</span></div></dialog>
+    <div id="toast" role="status"></div>
+    <script>
+      import { url } from '../config';
+      document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem('wkn-theme', theme); } catch {}
+      });
+      const dialog = document.querySelector<HTMLDialogElement>('#search-dialog')!;
+      const input = document.querySelector<HTMLInputElement>('#search-input')!;
+      const output = document.querySelector<HTMLDivElement>('#search-results')!;
+      const openSearch = () => { dialog.showModal(); input.focus(); };
+      document.querySelector('#search-open')?.addEventListener('click', openSearch);
+      document.querySelector('#search-close')?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', e => { if(e.target === dialog) dialog.close(); });
+      dialog.addEventListener('keydown', e => { if(e.key === 'Escape') {e.preventDefault();dialog.close();} });
+      document.addEventListener('keydown', e => { if((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); dialog.open ? dialog.close() : openSearch(); } });
+      let searchVersion = 0;
+      let pagefind: any;
+      input.addEventListener('input', async () => {
+        const version = ++searchVersion;
+        const query = input.value.trim();
+        output.replaceChildren();
+        const message = (text: string) => { const p=document.createElement('p'); p.className='search-hint'; p.textContent=text; output.replaceChildren(p); };
+        if(!query) {message('输入关键词，搜索所有文章');return;}
+        message('正在寻找……');
+        try {
+          pagefind ||= await import(/* @vite-ignore */ url('pagefind/pagefind.js'));
+          const result = await pagefind.search(query);
+          const data = await Promise.all(result.results.slice(0,8).map((r: any) => r.data()));
+          if(version !== searchVersion) return;
+          if(!data.length) {message('没有找到相关文章，试试其他关键词。');return;}
+          output.replaceChildren();
+          data.forEach((item: any) => { const a=document.createElement('a'); a.className='search-result'; a.href=item.url; const h=document.createElement('strong');h.textContent=item.meta.title; const p=document.createElement('p');p.textContent=item.excerpt.replace(/<[^>]*>/g,'');a.append(h,p);output.append(a); });
+        } catch { if(version === searchVersion) message(import.meta.env.DEV ? '开发模式尚未生成搜索索引。请运行 npm run build，再通过 npm run preview 使用全文搜索。' : '搜索暂时不可用，请刷新页面后重试。'); }
+      });
+      document.querySelector('#back-top')?.addEventListener('click', e => {e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});});
+    </script>
+  </body>
+</html>
